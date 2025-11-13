@@ -496,7 +496,7 @@
 
                 // 2. 關鍵事件：入侵者 (V5 Storyline)
                 const rescued = gameState.stats.phone > 0 || gameState.stats.radioOn;
-                let storyline = "(深夜 03:00) 砰！巨響傳來，有入侵者！你必須立刻求救！";
+                let storyline = "(深夜 03:00) 砰！巨響傳來，有入侵者！你必須立刻求救！<br><br>";
 
                 if (rescued) {
                     if (gameState.stats.phone > 0) {
@@ -672,14 +672,16 @@
                     ui.conclusion.title.textContent = "❮ 挑戰成功 ❯";
                     ui.conclusion.title.classList.remove('text-red-500');
                     ui.conclusion.title.classList.add('text-green-400');
-                    ui.conclusion.feedback.textContent = reason;
+                    // V-Fix: Use innerHTML to render line breaks
+                    ui.conclusion.feedback.innerHTML = reason; 
                     ui.conclusion.feedback.classList.remove('text-red-400');
                     ui.conclusion.feedback.classList.add('text-green-400');
                 } else {
                     ui.conclusion.title.textContent = "❮ 挑戰失敗 ❯";
                     ui.conclusion.title.classList.remove('text-green-400');
                     ui.conclusion.title.classList.add('text-red-500');
-                    ui.conclusion.feedback.textContent = reason;
+                    // V-Fix: Use innerHTML to render line breaks
+                    ui.conclusion.feedback.innerHTML = reason;
                     ui.conclusion.feedback.classList.remove('text-green-400');
                     ui.conclusion.feedback.classList.add('text-red-400');
                 }
