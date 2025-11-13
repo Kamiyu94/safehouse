@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>雷之呼吸：電力生存挑戰</title>
+    <title>雷之試煉：電力生存挑戰</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -26,23 +26,26 @@
             background-color: #374151; /* gray-700 */
         }
 
-        /* Survival Bar styles */
+        /* 生存數值條樣式 */
         .survival-bar-bg {
             background-color: #374151; /* gray-700 */
         }
         .survival-bar-fill {
             height: 100%;
             transition: width 0.5s ease-in-out;
-            text-align: right;
-            padding-right: 4px;
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
         }
         .survival-bar-fill.red { background-color: #EF4444; }
         .survival-bar-fill.yellow { background-color: #F59E0B; }
         .survival-bar-fill.green { background-color: #22C55E; }
         .survival-bar-fill.blue { background-color: #3B82F6; }
+        .survival-bar-fill.purple { background-color: #8B5CF6; } /* 心情 */
+        .survival-bar-fill.cyan { background-color: #06B6D4; } /* 手機 */
+
+        /* 確保浮動標頭和按鈕下的內容不會被遮擋 */
+        #game-screen {
+            padding-top: 170px; /* 浮動標頭的高度 */
+            padding-bottom: 100px; /* 浮動按鈕的高度 */
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen p-4">
@@ -52,175 +55,154 @@
         <!-- 畫面 1: 情境介紹 -->
         <div id="intro-screen" class="flex flex-col items-center justify-center min-h-[90vh] text-center">
             <header class="mb-8">
-                <h1 class="text-3xl md:text-4xl font-bold text-yellow-400 mb-4">❮ 電力生存挑戰 ❯</h1>
-                <p class="text-xl md:text-2xl text-gray-300">9°C 低溫生存</p>
+                <h1 class="text-3xl md:text-4xl font-bold text-yellow-400 mb-4">❮ 雷之呼吸：電力生存挑戰 ❯</h1>
+                <p class="text-xl md:text-2xl text-gray-300">蓄電池不是無限的！</p>
             </header>
             <div class="bg-gray-800 p-6 rounded-lg shadow-2xl w-full">
-                <p class="text-lg text-left font-bold mb-4">情境 (開戰第七天)：</p>
-                <p class="text-base text-left text-gray-300 mb-4">
-                    寒流來襲，室外 9°C。糧食和水還夠，但已斷電。
+                <p class="text-lg font-bold mb-4">(嚴肅地) 試煉開始！</p>
+                <p class="text-base text-gray-300 mb-4">
+                    開戰第七天，寒流來襲，室外 9°C。糧食和水還夠，但已斷電。
                     幸好，你的蓄電池充飽了 <span class="text-green-400 font-bold">10 格電</span>。
                 </p>
-                 <p class="text-base text-left text-gray-300 mb-6">
-                    現在是早上 07:00，你剛起床，狀態如下...
+                <p class="text-base text-gray-300 mb-6">
+                    現在是早上 7:00，你剛起床。今天要怎麼分配電量好呢？
                 </p>
-                
-                <!-- 初始狀態 -->
-                <div class="space-y-3 mb-8">
-                    <div class="flex items-center space-x-2">
-                        <span class="text-red-400 font-bold w-16">飽足度:</span>
-                        <div class="flex-grow survival-bar-bg rounded-full h-5">
-                            <div class="survival-bar-fill yellow" style="width: 50%;">50%</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <span class="text-blue-400 font-bold w-16">健康:</span>
-                        <div class="flex-grow survival-bar-bg rounded-full h-5">
-                            <div class="survival-bar-fill blue" style="width: 70%;">70%</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <span class="text-yellow-400 font-bold w-16">心情:</span>
-                        <div class="flex-grow survival-bar-bg rounded-full h-5">
-                            <div class="survival-bar-fill yellow" style="width: 50%;">50%</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <span class="text-green-400 font-bold w-16">手機:</span>
-                        <div class="flex-grow survival-bar-bg rounded-full h-5">
-                            <div class="survival-bar-fill red" style="width: 0%;">關機</div>
-                        </div>
-                    </div>
-                </div>
-
                 <button id="start-button" class="w-full bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-3 px-6 rounded-lg text-xl shadow-lg transition duration-300">
-                    開始 24 小時挑戰
+                    開始挑戰 (07:00)
                 </button>
             </div>
         </div>
 
         <!-- 畫面 2: 遊戲主體 -->
         <div id="game-screen" class="hidden">
-            <header class="text-center mb-4">
-                <h1 id="current-time" class="text-3xl font-bold text-yellow-400">現在是 07:00</h1>
-            </header>
-
-            <!-- 情境報告 (關鍵功能) -->
-            <div id="scenario-report" class="hidden bg-red-900 border-l-4 border-red-500 text-red-100 p-4 rounded-md mb-4 shadow-lg">
-                <!-- JS 會在這裡插入情境報告 -->
-            </div>
             
-            <!-- 即時反饋訊息 -->
-            <div id="feedback-message" class="hidden p-3 rounded-lg mb-4 shadow-lg text-base font-bold text-center">
-                <!-- JS 會在這裡插入即時訊息 -->
+            <!-- V7: 浮動狀態列 (頂部) -->
+            <div id="sticky-header" class="fixed top-0 left-0 right-0 bg-gray-900 shadow-lg z-20 max-w-xl mx-auto p-4 border-b border-gray-700">
+                <!-- 生存數值顯示 -->
+                <div id="survival-stats" class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-red-400 font-bold w-16">飽足度:</span>
+                        <div class="flex-grow survival-bar-bg rounded-full h-4">
+                            <div id="bar-fullness" class="survival-bar-fill red rounded-full" style="width: 50%;"></div>
+                        </div>
+                        <span id="val-fullness" class="w-10 text-right">50%</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-blue-400 font-bold w-16">健康:</span>
+                        <div class="flex-grow survival-bar-bg rounded-full h-4">
+                            <div id="bar-health" class="survival-bar-fill blue rounded-full" style="width: 70%;"></div>
+                        </div>
+                        <span id="val-health" class="w-10 text-right">70%</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-purple-400 font-bold w-16">心情:</span>
+                        <div class="flex-grow survival-bar-bg rounded-full h-4">
+                            <div id="bar-mood" class="survival-bar-fill purple rounded-full" style="width: 50%;"></div>
+                        </div>
+                        <span id="val-mood" class="w-10 text-right">50%</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-cyan-400 font-bold w-16">手機:</span>
+                        <div class="flex-grow survival-bar-bg rounded-full h-4">
+                            <div id="bar-phone" class="survival-bar-fill cyan rounded-full" style="width: 0%;"></div>
+                        </div>
+                        <span id="val-phone" class="w-10 text-right">0%</span>
+                    </div>
+                </div>
+
+                <!-- 電力存量 -->
+                <div class="bg-gray-800 p-3 rounded-lg shadow-md">
+                    <h2 class="text-lg font-bold mb-2 text-center">蓄電池存量</h2>
+                    <div id="energy-display" class="grid grid-cols-10 gap-1.5 mb-2">
+                        <!-- JS 會在這裡生成 10 格電 -->
+                    </div>
+                    <div class="text-center text-lg font-bold">
+                        剩餘電力： <span id="energy-count" class="text-green-400 text-2xl">10</span> / 10
+                    </div>
+                </div>
             </div>
 
-            <!-- 生存數值 (遊戲中) -->
-            <div id="survival-stats" class="grid grid-cols-2 gap-3 mb-6 bg-gray-800 p-4 rounded-lg shadow-md">
-                <div class="flex items-center space-x-2">
-                    <span class="text-red-400 font-bold w-12">飽足度:</span>
-                    <div class="flex-grow survival-bar-bg rounded-full h-4">
-                        <div id="bar-hunger" class="survival-bar-fill red"></div>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <span class="text-blue-400 font-bold w-12">健康:</span>
-                    <div class="flex-grow survival-bar-bg rounded-full h-4">
-                        <div id="bar-health" class="survival-bar-fill blue"></div>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <span class="text-yellow-400 font-bold w-12">心情:</span>
-                    <div class="flex-grow survival-bar-bg rounded-full h-4">
-                        <div id="bar-mood" class="survival-bar-fill yellow"></div>
-                    </div>
-                </div>
-                 <div class="flex items-center space-x-2">
-                    <span class="text-green-400 font-bold w-12">手機:</span>
-                    <div class="flex-grow survival-bar-bg rounded-full h-4">
-                        <div id="bar-phone" class="survival-bar-fill green"></div>
-                    </div>
-                </div>
-            </div>
+            <!-- 遊戲主要內容 (可捲動) -->
+            <main class="w-full">
+                <!-- 時段標題 -->
+                <header class="text-center mb-4">
+                    <h1 id="phase-title" class="text-3xl font-bold text-yellow-400"></h1>
+                </header>
 
-            <!-- 電力狀態 -->
-            <div class="bg-gray-800 p-4 rounded-lg shadow-md mb-6">
-                <h2 class="text-xl font-bold mb-3 border-b border-gray-600 pb-2">蓄電池存量</h2>
-                <div id="energy-display" class="grid grid-cols-5 gap-2 mb-3">
-                    <!-- JS 會在這裡生成 10 格電 -->
+                <!-- 情境報告 -->
+                <div id="scenario-report" class="p-4 rounded-lg mb-6 shadow-lg text-base bg-gray-800 border-l-4 border-yellow-400 min-h-[50px]">
+                    <!-- JS 會在這裡插入情境報告 -->
                 </div>
-                <div class="text-center text-lg font-bold">
-                    剩餘電力： <span id="energy-count" class="text-green-400 text-2xl">10</span> / 10
-                </div>
-            </div>
-            
-            <!-- 電器列表 -->
-            <div id="appliance-list" class="space-y-6">
-                <h2 class="text-xl font-bold text-gray-300 mb-2 text-center">選擇你要使用的電器：</h2>
-                <!-- 高耗能 -->
-                <section>
-                    <h3 class="text-xl font-bold text-red-500 mb-3 flex items-center">
-                        <span class="text-2xl mr-2">👹</span> 高耗能
-                    </h3>
-                    <div id="high-energy-list" class="grid grid-cols-1 gap-4">
-                        <!-- JS 會在這裡生成卡片 -->
-                    </div>
-                </section>
-                <!-- 中耗能 -->
-                <section>
-                    <h3 class="text-xl font-bold text-amber-500 mb-3 flex items-center">
-                        <span class="text-2xl mr-2">🟡</span> 中耗能
-                    </h3>
-                    <div id="medium-energy-list" class="grid grid-cols-1 gap-4">
-                        <!-- JS 會在這裡生成卡片 -->
-                    </div>
-                </section>
-                <!-- 低耗能 -->
-                <section>
-                    <h3 class="text-xl font-bold text-green-500 mb-3 flex items-center">
-                        <span class="text-2xl mr-2">💚</span> 維生級
-                    </h3>
-                    <div id="low-energy-list" class="grid grid-cols-1 gap-4">
-                        <!-- JS 會在這裡生成卡片 -->
-                    </div>
-                </section>
-            </div>
 
-            <!-- 推進按鈕 -->
-            <button id="proceed-button" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-6 rounded-lg text-xl shadow-lg transition duration-300 mt-8 sticky bottom-4 z-10 opacity-95">
+                <!-- 電器卡片區 -->
+                <div id="appliance-list" class="space-y-6">
+                    <h2 class="text-xl font-bold text-gray-300 mb-4 text-center">選擇你要使用的電器：</h2>
+                    
+                    <!-- 高耗能 -->
+                    <section>
+                        <h3 class="text-xl font-bold text-red-500 mb-3 flex items-center">
+                            <span class="text-2xl mr-2">👹</span> 毀滅級 (高耗能)
+                        </h3>
+                        <div id="high-energy-list" class="grid grid-cols-1 gap-4">
+                            <!-- JS 會在這裡生成卡片 -->
+                        </div>
+                    </section>
+                    
+                    <!-- 中耗能 -->
+                    <section>
+                        <h3 class="text-xl font-bold text-amber-500 mb-3 flex items-center">
+                            <span class="text-2xl mr-2">🟡</span> 戰術級 (中耗能)
+                        </h3>
+                        <div id="medium-energy-list" class="grid grid-cols-1 gap-4">
+                            <!-- JS 會在這裡生成卡片 -->
+                        </div>
+                    </section>
+
+                    <!-- 低耗能 -->
+                    <section>
+                        <h3 class="text-xl font-bold text-green-500 mb-3 flex items-center">
+                            <span class="text-2xl mr-2">💚</span> 維生級 (低耗能)
+                        </h3>
+                        <div id="low-energy-list" class="grid grid-cols-1 gap-4">
+                            <!-- JS 會在這裡生成卡片 -->
+                        </div>
+                    </section>
+                </div>
+            </main>
+
+            <!-- V6: 浮動推進按鈕 (底部) -->
+            <button id="proceed-button" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-6 rounded-lg text-xl shadow-lg transition duration-300 mt-8 fixed bottom-0 left-0 right-0 z-20 max-w-xl mx-auto opacity-95">
                 推進到 中午 (12:00)
             </button>
         </div>
 
         <!-- 畫面 3: 總結報告 -->
         <div id="conclusion-screen" class="hidden flex flex-col items-center justify-center min-h-[90vh] text-center">
+
+            <!-- V8-Fix: 調整順序，先顯示劇情回饋 (移到 header 上方) -->
+            <div id="conclusion-feedback" class="text-lg mb-8 p-4 bg-gray-700 rounded-md text-left w-full">
+                <!-- JS 會插入動態反饋 -->
+            </div>
+
             <header class="mb-8">
                 <h1 id="conclusion-title" class="text-3xl md:text-4xl font-bold text-yellow-400 mb-4">❮ 試煉總結 ❯</h1>
             </header>
             <div class="bg-gray-800 p-6 rounded-lg shadow-2xl w-full">
-                
-                <div id="conclusion-feedback" class="text-xl font-bold mb-6 p-4 bg-gray-700 rounded-md">
-                    <!-- JS 插入主要結果 -->
-                </div>
-
                 <p id="conclusion-stats" class="text-lg text-gray-300 mb-6"></p>
-
-                <div id="conclusion-details" class="text-left text-base bg-gray-900 p-4 rounded-md mb-6 space-y-2">
-                    <h4 class="text-lg font-bold text-white border-b border-gray-700 pb-2">最終狀態</h4>
-                    <!-- JS 插入最終數值 -->
-                </div>
                 
-                <div class="text-left text-lg bg-gray-900 p-4 rounded-md mb-8">
-                    <p class="font-bold text-xl mb-3 text-white">【最終啟示】</p>
-                    <p class="text-gray-300">記住，災難生存中，<span class="text-yellow-400 font-bold">第一優先</span>永遠是：</p>
-                    <ul class="list-disc list-inside mt-2 text-green-400">
-                        <li>通訊 (求救、對外聯繫)</li>
-                        <li>照明 (確保安全、行動)</li>
-                        <li>資訊 (掌握狀況、應變)</li>
-                    </ul>
-                    <p class="mt-3 text-gray-300">你必須在「生存」與「舒適」之間做出殘酷的選擇。</p>
+                <div class="text-left text-base bg-gray-900 p-4 rounded-md mb-6 space-y-2">
+                    <p><span class="text-red-400 font-bold">最終飽足度:</span> <span id="final-fullness"></span>%</p>
+                    <p><span class="text-blue-400 font-bold">最終健康:</span> <span id="final-health"></span>%</p>
+                    <p><span class="text-purple-400 font-bold">最終心情:</span> <span id="final-mood"></span>%</p>
+                    <p><span class="text-cyan-400 font-bold">最終手機電量:</span> <span id="final-phone"></span>%</p>
+                    <p><span class="text-green-400 font-bold">無線電:</span> <span id="final-radio"></span></p>
                 </div>
 
+                <!-- V8-Fix: 移到上方
+                <div id="conclusion-feedback" class="text-lg mb-8 p-4 bg-gray-700 rounded-md text-left">
+                </div>
+                -->
+                
                 <button id="reset-button" class="w-full bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-3 px-6 rounded-lg text-xl shadow-lg transition duration-300">
                     重新挑戰
                 </button>
@@ -231,34 +213,51 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            // --- 遊戲資料設定 ---
-
+            // --- V5 電器資料 ---
             const applianceData = {
                 high: [
-                    { id: 'stove', name: '電磁爐 (煮一餐)', cost: 3, effects: { hunger: +50, health: +10 } }, // V5 Change: cost 4 -> 3
-                    { id: 'heater', name: '電暖器 (使用 4 小時)', cost: 3, effects: { health: +30, mood: +10 } }
+                    { id: 'ih_stove', name: '電磁爐 (煮一餐)', cost: 3, type: 'consumable', effects: { fullness: +50, health: +10 } },
+                    { id: 'heater', name: '電暖器 (使用 4 小時)', cost: 3, type: 'consumable', effects: { health: +30, mood: +10 } }
                 ],
                 medium: [
-                    { id: 'kettle', name: '熱水壺 (泡茶/咖啡/熱湯)', cost: 2, effects: { health: +20, mood: +10, hunger: +10 } }, // V5 Change: added hunger +10
-                    { id: 'media', name: '多媒體播放器 (娛樂 2 小時)', cost: 2, effects: { mood: +30 } }
+                    { id: 'kettle', name: '熱水壺 (泡茶/咖啡/熱湯)', cost: 2, type: 'consumable', effects: { health: +20, mood: +10, fullness: +10 } },
+                    { id: 'media_player', name: '多媒體播放器 (娛樂 2 小時)', cost: 2, type: 'consumable', effects: { mood: +30 } }
                 ],
                 low: [
-                    { id: 'phone', name: '手機 (充電一次)', cost: 1, effects: { phone: 100 } }, // 特殊處理
-                    { id: 'led', name: 'LED 露營燈 (開啟)', cost: 1, effects: { mood: +10 } },
-                    { id: 'radio', name: '無線電 (開啟)', cost: 1, effects: { mood: +10, radioOn: true } } // 特殊處理
+                    { id: 'phone', name: '手機 (充電一次)', cost: 1, type: 'consumable', effects: { phone: +100 } },
+                    { id: 'led_light', name: 'LED 露營燈 (開啟)', cost: 1, type: 'toggle', effects: { mood: +10 } },
+                    { id: 'radio', name: '無線電 (開啟)', cost: 1, type: 'toggle', effects: { mood: +10 } }
                 ]
             };
 
-            const phaseData = {
-                1: { time: "07:00", buttonText: "推進到 中午 (12:00)" },
-                2: { time: "12:00", buttonText: "推進到 傍晚 (18:00)" },
-                3: { time: "18:00", buttonText: "推進到 睡前 (21:00)" },
-                4: { time: "21:00", buttonText: "睡覺 (結束這一天)" },
+            // --- 遊戲狀態 (V5) ---
+            let gameState = {};
+
+            const defaultGameState = {
+                energy: 10,
+                phase: 0, // 0: 07:00, 1: 12:00, 2: 18:00, 3: 21:00
+                stats: {
+                    fullness: 50,
+                    health: 70,
+                    mood: 50,
+                    phone: 0
+                },
+                flags: {
+                    led_light_on: false,
+                    radio_on: false,
+                    // 用來追蹤"懲罰"是否已被應用
+                    darkness_penalty_applied: false, 
+                    // V5: 用來追蹤低溫懲罰
+                    low_temp_penalty_applied: false 
+                }
             };
 
-            // --- 遊戲狀態變數 ---
-
-            let gameState;
+            const phaseDetails = [
+                { time: "早上 (07:00)", proceedText: "推進到 中午 (12:00)" },
+                { time: "中午 (12:00)", proceedText: "推進到 傍晚 (18:00)" },
+                { time: "傍晚 (18:00)", proceedText: "推進到 睡前 (21:00)" },
+                { time: "睡前 (21:00)", proceedText: "睡覺 (結束這一天)" }
+            ];
 
             // --- DOM 元素 ---
             const screens = {
@@ -266,71 +265,58 @@
                 game: document.getElementById('game-screen'),
                 conclusion: document.getElementById('conclusion-screen')
             };
+
             const buttons = {
                 start: document.getElementById('start-button'),
                 reset: document.getElementById('reset-button'),
                 proceed: document.getElementById('proceed-button')
             };
+
             const ui = {
-                currentTime: document.getElementById('current-time'),
-                scenarioReport: document.getElementById('scenario-report'),
-                feedbackMessage: document.getElementById('feedback-message'),
                 energyDisplay: document.getElementById('energy-display'),
                 energyCount: document.getElementById('energy-count'),
+                phaseTitle: document.getElementById('phase-title'),
+                scenarioReport: document.getElementById('scenario-report'),
                 lists: {
                     high: document.getElementById('high-energy-list'),
                     medium: document.getElementById('medium-energy-list'),
-                    low: document.getElementById('low-energy-list'),
+                    low: document.getElementById('low-energy-list')
                 },
                 bars: {
-                    hunger: document.getElementById('bar-hunger'),
+                    fullness: document.getElementById('bar-fullness'),
                     health: document.getElementById('bar-health'),
                     mood: document.getElementById('bar-mood'),
-                    phone: document.getElementById('bar-phone'),
+                    phone: document.getElementById('bar-phone')
+                },
+                vals: {
+                    fullness: document.getElementById('val-fullness'),
+                    health: document.getElementById('val-health'),
+                    mood: document.getElementById('val-mood'),
+                    phone: document.getElementById('val-phone')
                 },
                 conclusion: {
                     title: document.getElementById('conclusion-title'),
-                    feedback: document.getElementById('conclusion-feedback'),
                     stats: document.getElementById('conclusion-stats'),
-                    details: document.getElementById('conclusion-details'),
+                    feedback: document.getElementById('conclusion-feedback'),
+                    finalFullness: document.getElementById('final-fullness'),
+                    finalHealth: document.getElementById('final-health'),
+                    finalMood: document.getElementById('final-mood'),
+                    finalPhone: document.getElementById('final-phone'),
+                    finalRadio: document.getElementById('final-radio')
                 }
             };
 
             // --- 遊戲流程控制 ---
 
-            function init() {
-                // 重設遊戲狀態
-                gameState = {
-                    phase: 1,
-                    time: "07:00",
-                    energy: 10,
-                    stats: {
-                        hunger: 50,
-                        health: 70,
-                        mood: 50,
-                        phone: 0,
-                        radioOn: false,
-                    },
-                    applianceUsed: {
-                        // V4 Change: Only track one-time use items
-                        led: false,
-                        radio: false,
-                    },
-                    failReason: ""
-                };
-                
-                // 顯示/隱藏畫面
-                screens.intro.classList.remove('hidden');
-                screens.game.classList.add('hidden');
-                screens.conclusion.classList.add('hidden');
-
-                // 渲染能量積木
-                renderEnergyBlocks();
-            }
-
             function startGame() {
                 screens.intro.classList.add('hidden');
                 screens.game.classList.remove('hidden');
+                
+                // V5: 使用深拷貝來重設狀態
+                gameState = JSON.parse(JSON.stringify(defaultGameState));
+                
+                renderEnergyBlocks();
+                renderAllApplianceCards();
                 renderPhase(""); // 初始情境報告為空
 
                 // V6 Change: Scroll to top
@@ -338,287 +324,117 @@
             }
 
             buttons.start.addEventListener('click', startGame);
-            buttons.reset.addEventListener('click', init);
+            buttons.reset.addEventListener('click', startGame);
             buttons.proceed.addEventListener('click', proceedToNextPhase);
 
-            // --- 核心遊戲邏輯 ---
+            // --- 核心渲染函式 ---
 
-            function proceedToNextPhase() {
-                let report = []; // 情境報告
-                let currentPhase = gameState.phase;
-                let failed = false;
-
-                // 1. 結算上個時段的「被動懲罰」
-                switch (currentPhase) {
-                    case 1: // 07:00 -> 12:00
-                        // V5 Change: Passive fullness reduction (-30%) and penalty check
-                        gameState.stats.hunger = Math.max(0, gameState.stats.hunger - 30);
-                        report.push(`... (時間流逝) ... 你的肚子開始叫了 (飽足度 -30%)。`);
-                        if (gameState.stats.hunger < 50) {
-                            gameState.stats.health = Math.max(0, gameState.stats.health - 5);
-                            gameState.stats.mood = Math.max(0, gameState.stats.mood - 5);
-                            report.push("🔴 飽足度過低，你感到虛弱且煩躁 (健康-5%, 心情-5%)。");
-                        }
-
-                        if (gameState.stats.phone > 0) {
-                            gameState.stats.phone = Math.max(0, gameState.stats.phone - 50);
-                            report.push("📱 你早上用手機查看了新聞，消耗了 50% 電力。");
-                            if (gameState.stats.phone == 0) report.push("手機沒電了！");
-                        }
-                        break;
-                    case 2: // 12:00 -> 18:00
-                        // V5 Change: Passive fullness reduction (-30%) and penalty check
-                        gameState.stats.hunger = Math.max(0, gameState.stats.hunger - 30);
-                        if (gameState.stats.hunger <= 0) {
-                            report.push("🚨 你因為過度飢餓而昏倒了！ (飽足度 -30%)");
-                        } else {
-                            report.push(`... (時間流逝) ... 飢餓感越來越強烈 (飽足度 -30%)。`);
-                            if (gameState.stats.hunger < 50) {
-                                gameState.stats.health = Math.max(0, gameState.stats.health - 5);
-                                gameState.stats.mood = Math.max(0, gameState.stats.mood - 5);
-                                report.push("🔴 飽足度過低，你感到虛弱且煩躁 (健康-5%, 心情-5%)。");
-                            }
-                        }
-                        
-                        if (gameState.stats.phone > 0) {
-                            gameState.stats.phone = Math.max(0, gameState.stats.phone - 50);
-                            report.push("📱 你下午又用了手機，消耗 50% 電力。");
-                            if (gameState.stats.phone == 0) report.push("手機沒電了！");
-                        }
-                        // V5 Change: Passive fullness reduction (-30%) and penalty check
-                        gameState.stats.hunger = Math.max(0, gameState.stats.hunger - 30);
-                        if (gameState.stats.hunger <= 0) {
-                            report.push("🚨 你因為過度飢餓而昏倒了！ (飽足度 -30%)");
-                        } else {
-                            report.push(`... (時間流逝) ... 你感到非常飢餓 (飽足度 -30%)。`);
-                            if (gameState.stats.hunger < 50) {
-                                gameState.stats.health = Math.max(0, gameState.stats.health - 5);
-                                gameState.stats.mood = Math.max(0, gameState.stats.mood - 5);
-                                report.push("🔴 飽足度過低，你感到虛弱且煩躁 (健康-5%, 心情-5%)。");
-                            }
-                        }
-                        
-                        // V5 Change: Add 21:00 time prompt
-                        report.push("<br>---<br>🌃 夜深了，9°C 的空氣刺骨。你準備睡覺了。");
-                        report.push("🔵 (提示) 在這種低溫下睡覺，不使用熱源 (電暖器/熱水壺) 將會嚴重影響你的健康。");
-                        break;
-                    case 4: // 21:00 -> 03:00 (結算)
-                        endGame();
-                        return;
-                }
-
-                // 2. 檢查是否因懲罰而失敗
-                failed = checkFailureConditions();
-                if (failed) {
-                    showConclusion(false, gameState.failReason);
-                    return;
-                }
-
-                // 3. 推進時相
-                gameState.phase++;
-                gameState.time = phaseData[gameState.phase].time;
-
-                // 4. 渲染新時相
-                renderPhase(report.join("<br>"));
-
-                // V6 Change: Scroll to top
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-
-            function useAppliance(id, category) {
-                const app = applianceData[category].find(a => a.id === id);
-                if (!app) return;
-
-                // V4 Change: Check for one-time use appliances (led, radio)
-                const isOneTimeUse = (app.id === 'led' || app.id === 'radio');
-                if (isOneTimeUse && gameState.applianceUsed[id]) {
-                    showMessage("你已經開啟過這個電器了。", "info");
-                    return;
-                }
-
-                // 檢查電力
-                if (gameState.energy < app.cost) {
-                    showMessage("電力不足！", "error");
-                    return;
-                }
-
-                // 消耗電力
-                gameState.energy -= app.cost;
-
-                // 應用效果
-                for (const [key, value] of Object.entries(app.effects)) {
-                    if (key === 'radioOn') {
-                        gameState.stats.radioOn = true;
-                    } else if (key === 'phone') {
-                        gameState.stats.phone = 100; // 充到飽
-                    } else {
-                        gameState.stats[key] = Math.min(100, gameState.stats[key] + value);
-                    }
-                }
-
-                // V4 Change: Mark one-time use appliances
-                if (isOneTimeUse) {
-                    gameState.applianceUsed[id] = true;
-                }
-                
-                showMessage(`你使用了「${app.name}」，消耗 ${app.cost} 格電。`, "success");
-
-                // 立即更新 UI
-                updateStatsUI();
-                updateEnergyUI();
-                renderAppliances(); // 重繪按鈕狀態
-            }
-
-            function checkFailureConditions() {
-                if (gameState.stats.hunger <= 0) {
-                    gameState.failReason = "你在入侵者到來前，就因為過度飢餓而昏倒了...";
-                    return true;
-                }
-                if (gameState.stats.health <= 0) {
-                    gameState.failReason = "你在入侵者到來前，就因為失溫或虛弱而昏倒了...";
-                    return true;
-                }
-                return false;
-            }
-
-            function endGame() {
-                // 1. 睡前最後的健康檢查 (9°C 低溫)
-                if (!gameState.applianceUsed.heater && !gameState.applianceUsed.kettle) {
-                    gameState.stats.health = Math.max(0, gameState.stats.health - 30);
-                } else if (!gameState.applianceUsed.heater) {
-                     gameState.stats.health = Math.max(0, gameState.stats.health - 15); // V5: Added penalty for only kettle
-                }
-
-                if (checkFailureConditions()) {
-                    showConclusion(false, gameState.failReason);
-                    return;
-                }
-
-                // 2. 關鍵事件：入侵者 (V5 Storyline)
-                const rescued = gameState.stats.phone > 0 || gameState.stats.radioOn;
-                let storyline = "(深夜 03:00) 砰！巨響傳來，有入侵者！你必須立刻求救！<br><br>";
-
-                if (rescued) {
-                    if (gameState.stats.phone > 0) {
-                        storyline += "你抓起手機成功撥號... 救援隊正在路上！";
-                    } else { // radioOn must be true
-                        storyline += "你打開無線電... 另一端傳來了回應！ 救援隊正在路上！";
-                    }
-                    showConclusion(true, storyline);
-                } else {
-                    storyline += "你的手機一片漆黑，無線電也靜悄悄。你錯失了唯一的求救機會...";
-                    showConclusion(false, storyline);
-                }
-            }
-
-            // --- UI 渲染函式 ---
-
+            // 渲染單個時相
             function renderPhase(reportText) {
-                // 更新時間
-                ui.currentTime.textContent = `現在是 ${gameState.time}`;
-                // *** FIX: Use buttons.proceed instead of ui.proceedButton ***
-                buttons.proceed.textContent = phaseData[gameState.phase].buttonText;
-
-                // 顯示情境報告
-                if (reportText) {
-                    ui.scenarioReport.innerHTML = reportText;
-                    ui.scenarioReport.classList.remove('hidden');
-                } else {
-                    ui.scenarioReport.classList.add('hidden');
-                }
-
-                // 更新所有 UI 元素
+                const phase = phaseDetails[gameState.phase];
+                
+                ui.phaseTitle.textContent = phase.time;
+                buttons.proceed.textContent = phase.proceedText;
+                ui.scenarioReport.innerHTML = reportText || "請選擇你要使用的電器。";
+                
                 updateStatsUI();
                 updateEnergyUI();
-                renderAppliances();
+                updateAllCardButtons();
             }
-            
-            function renderAppliances() {
-                // 清空列表
+
+            // 渲染能量格
+            function renderEnergyBlocks() {
+                ui.energyDisplay.innerHTML = '';
+                for(let i = 0; i < 10; i++) {
+                    const block = document.createElement('div');
+                    block.id = `energy-block-${i}`;
+                    block.className = 'energy-block h-6 rounded';
+                    ui.energyDisplay.appendChild(block);
+                }
+            }
+
+            // 渲染所有電器卡
+            function renderAllApplianceCards() {
                 ui.lists.high.innerHTML = '';
                 ui.lists.medium.innerHTML = '';
                 ui.lists.low.innerHTML = '';
 
-                // 遍歷三種列表
-                for (const category in applianceData) {
-                    applianceData[category].forEach(app => {
-                        const listEl = ui.lists[category];
-                        const card = document.createElement('div');
-                        card.className = `bg-gray-800 p-4 rounded-lg shadow-lg card-category-${category} flex justify-between items-center`;
-
-                        let effectsText = '';
-                        for (const [key, value] of Object.entries(app.effects)) {
-                             effectsText += `${keyToText(key)} ${value > 0 ? '+' : ''}${value}${keyToUnit(key)} `;
-                        }
-
-                        let buttonDisabled = false;
-                        let buttonText = "使用";
-
-                        // V4 Change: Update button logic for reusable items
-                        const isOneTimeUse = (app.id === 'led' || app.id === 'radio');
-                        if (isOneTimeUse && gameState.applianceUsed[app.id]) {
-                            buttonDisabled = true;
-                            buttonText = "已開啟";
-                        } else if (gameState.energy < app.cost) {
-                            buttonDisabled = true;
-                            buttonText = "電力不足";
-                        } else if (app.id === 'phone' && gameState.stats.phone === 100) {
-                            buttonDisabled = true;
-                            buttonText = "已充飽";
-                        } else if (app.id === 'phone') {
-                            buttonText = "充電";
-                        } else if (isOneTimeUse) { // V4 Add
-                            buttonText = "開啟";
-                        }
-
-                        card.innerHTML = `
-                            <div>
-                                <h4 class="text-lg font-bold">${app.name}</h4>
-                                <p class="text-sm text-gray-400">效果: ${effectsText}</p>
-                            </div>
-                            <button data-id="${app.id}" data-category="${category}" class="select-btn w-24 text-center bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-md transition duration-300 ${buttonDisabled ? 'bg-gray-500 cursor-not-allowed hover:bg-gray-500' : ''}" ${buttonDisabled ? 'disabled' : ''}>
-                                ${buttonText} (${app.cost} 格)
-                            </button>
-                        `;
-                        listEl.appendChild(card);
-                    });
-                }
+                applianceData.high.forEach(app => ui.lists.high.appendChild(createCard(app, 'high')));
+                applianceData.medium.forEach(app => ui.lists.medium.appendChild(createCard(app, 'medium')));
+                applianceData.low.forEach(app => ui.lists.low.appendChild(createCard(app, 'low')));
             }
 
-            // 綁定電器按鈕事件 (事件委派)
-            document.getElementById('appliance-list').addEventListener('click', (e) => {
-                if (e.target.classList.contains('select-btn')) {
-                    const id = e.target.dataset.id;
-                    const category = e.target.dataset.category;
-                    useAppliance(id, category);
+            // 創建單張電器卡
+            function createCard(app, category) {
+                const card = document.createElement('div');
+                card.className = `bg-gray-800 p-4 rounded-lg shadow-lg card-category-${category} flex flex-col`;
+
+                let effectsText = '';
+                for (const [key, value] of Object.entries(app.effects)) {
+                    const sign = value > 0 ? '+' : '';
+                    let displayKey = '', colorClass = '';
+                    switch (key) {
+                        case 'fullness': displayKey = '飽足度'; colorClass = 'text-red-400'; break;
+                        case 'health': displayKey = '健康'; colorClass = 'text-blue-400'; break;
+                        case 'mood': displayKey = '心情'; colorClass = 'text-purple-400'; break;
+                        case 'phone': displayKey = '手機電量'; colorClass = 'text-cyan-400'; break;
+                    }
+                    effectsText += `<span class="${colorClass}">${displayKey}${sign}${value}%</span> `;
                 }
-            });
+
+                card.innerHTML = `
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="text-lg font-bold">${app.name}</h4>
+                            <span class="text-sm text-gray-400">消耗 <span class="font-bold text-xl text-yellow-400">${app.cost}</span> 格電</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mb-3">${effectsText}</p>
+                    </div>
+                    <button data-id="${app.id}" data-cost="${app.cost}" data-type="${app.type}" class="select-btn w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-md transition duration-300">
+                        使用
+                    </button>
+                `;
+                
+                card.querySelector('.select-btn').addEventListener('click', () => useAppliance(app.id, category));
+                return card;
+            }
+
+            // --- UI 更新函式 ---
 
             function updateStatsUI() {
-                for (const [key, barEl] of Object.entries(ui.bars)) {
-                    const value = gameState.stats[key];
-                    let text = `${value}%`;
-                    let colorClass = 'green';
+                const stats = gameState.stats;
+                stats.fullness = Math.min(100, Math.max(0, stats.fullness));
+                stats.health = Math.min(100, Math.max(0, stats.health));
+                stats.mood = Math.min(100, Math.max(0, stats.mood));
+                stats.phone = Math.min(100, Math.max(0, stats.phone));
 
-                    if (key === 'phone') {
-                        text = value > 0 ? `${value}%` : "關機";
-                    } else if (value <= 25) {
-                        colorClass = 'red';
-                    } else if (value <= 50) {
-                        colorClass = 'yellow';
-                    } else if (key === 'health') {
-                        colorClass = 'blue';
-                    }
-                    
-                    barEl.style.width = `${value}%`;
-                    barEl.textContent = text;
-                    barEl.className = `survival-bar-fill ${colorClass} rounded-full`;
-                }
+                ui.vals.fullness.textContent = `${stats.fullness}%`;
+                ui.vals.health.textContent = `${stats.health}%`;
+                ui.vals.mood.textContent = `${stats.mood}%`;
+                ui.vals.phone.textContent = `${stats.phone}%`;
+
+                ui.bars.fullness.style.width = `${stats.fullness}%`;
+                ui.bars.health.style.width = `${stats.health}%`;
+                ui.bars.mood.style.width = `${stats.mood}%`;
+                ui.bars.phone.style.width = `${stats.phone}%`;
+                
+                // 根據數值改變顏色
+                ui.bars.fullness.className = `survival-bar-fill rounded-full ${stats.fullness < 50 ? 'red' : 'green'}`;
+                ui.bars.health.className = `survival-bar-fill rounded-full ${stats.health < 50 ? 'red' : 'blue'}`;
+                ui.bars.mood.className = `survival-bar-fill rounded-full ${stats.mood < 50 ? 'red' : 'purple'}`;
             }
 
             function updateEnergyUI() {
                 ui.energyCount.textContent = gameState.energy;
-                for (let i = 0; i < 10; i++) {
+                if (gameState.energy <= 3) {
+                    ui.energyCount.classList.remove('text-green-400');
+                    ui.energyCount.classList.add('text-red-500');
+                } else {
+                    ui.energyCount.classList.add('text-green-400');
+                    ui.energyCount.classList.remove('text-red-500');
+                }
+
+                for(let i = 0; i < 10; i++) {
                     const block = document.getElementById(`energy-block-${i}`);
                     if (i < gameState.energy) {
                         block.classList.add('full');
@@ -628,42 +444,184 @@
                         block.classList.remove('full');
                     }
                 }
-                if (gameState.energy <= 3) {
-                    ui.energyCount.classList.add('text-red-500');
-                    ui.energyCount.classList.remove('text-green-400');
+            }
+
+            function updateAllCardButtons() {
+                document.querySelectorAll('.select-btn').forEach(btn => {
+                    const cost = parseInt(btn.dataset.cost);
+                    const type = btn.dataset.type;
+                    const id = btn.dataset.id;
+                    
+                    let isDisabled = false;
+                    let text = "使用";
+
+                    // 1. 檢查是否為已開啟的 'toggle'
+                    if (type === 'toggle' && gameState.flags[id + '_on']) {
+                        isDisabled = true;
+                        text = "已開啟";
+                    }
+                    // 2. 檢查電力是否足夠
+                    else if (cost > gameState.energy) {
+                        isDisabled = true;
+                        text = "電力不足";
+                    }
+
+                    // 應用狀態
+                    btn.disabled = isDisabled;
+                    btn.textContent = text;
+                    if (isDisabled) {
+                        btn.classList.add('bg-gray-500', 'cursor-not-allowed');
+                        btn.classList.remove('bg-green-600', 'hover:bg-green-500');
+                        if (text === "電力不足") {
+                            btn.classList.add('bg-red-700');
+                            btn.classList.remove('bg-gray-500');
+                        }
+                    } else {
+                        btn.classList.remove('bg-gray-500', 'bg-red-700', 'cursor-not-allowed');
+                        btn.classList.add('bg-green-600', 'hover:bg-green-500');
+                    }
+                });
+            }
+
+            // --- 核心遊戲邏輯 ---
+
+            // V5: 使用電器
+            function useAppliance(id, category) {
+                const allAppliances = [...applianceData.high, ...applianceData.medium, ...applianceData.low];
+                const app = allAppliances.find(a => a.id === id);
+
+                if (!app || gameState.energy < app.cost) return; // 重複檢查
+
+                // 扣除電力
+                gameState.energy -= app.cost;
+
+                // 應用效果
+                for (const [key, value] of Object.entries(app.effects)) {
+                    gameState.stats[key] = Math.min(100, gameState.stats[key] + value);
+                }
+
+                // 標記 'toggle' 電器
+                if (app.type === 'toggle') {
+                    gameState.flags[id + '_on'] = true;
+                }
+
+                // 更新 UI
+                updateEnergyUI();
+                updateStatsUI();
+                updateAllCardButtons();
+            }
+
+            // V5: 推進時相
+            function proceedToNextPhase() {
+                let report = []; // 情境報告
+
+                // --- 1. 被動懲罰結算 (V5 邏輯) ---
+                // 結算是根據 *上一個* 時相的狀態來決定的
+
+                // V8-Fix: 睡覺 (Phase 3 -> 4) 時不應消耗飽足度
+                if (gameState.phase < 3) {
+                    // V5: 飽足度被動減少
+                    gameState.stats.fullness = Math.max(0, gameState.stats.fullness - 30);
+                    report.push("時間流逝，你消耗了一些熱量 (飽足度 -30%)。");
+
+                    // V5: 低飽足度懲罰
+                    if (gameState.stats.fullness < 50) {
+                        gameState.stats.health = Math.max(0, gameState.stats.health - 5);
+                        gameState.stats.mood = Math.max(0, gameState.stats.mood - 5);
+                        report.push(`<span class="text-red-400">你的飽足度過低 (${gameState.stats.fullness}%)，飢餓感讓你虛弱且煩躁 (健康-5%, 心情-5%)。</span>`);
+                    }
+
+                    // 手機被動耗電
+                    if (gameState.stats.phone > 0) {
+                        gameState.stats.phone = Math.max(0, gameState.stats.phone - 50);
+                        report.push("你使用手機查看了資訊 (手機電量 -50%)。");
+                    }
+                }
+
+                // --- 2. 根據推進到的 *新時相* 觸發特定事件 ---
+                gameState.phase++;
+
+                switch (gameState.phase) {
+                    case 1: // 推進到 中午 (12:00)
+                        // 早上 07:00 的結算 (已在上面完成)
+                        break;
+                    
+                    case 2: // 推進到 傍晚 (18:00)
+                        // 中午 12:00 的結算 (已在上面完成)
+                        report.push('<span class="text-yellow-400">天黑了。</span>');
+                        break;
+                    
+                    case 3: // 推進到 睡前 (21:00)
+                        // 傍晚 18:00 的結算
+                        // [天黑檢查]
+                        if (!gameState.flags.led_light_on && !gameState.flags.darkness_penalty_applied) {
+                            gameState.stats.mood = Math.max(0, gameState.stats.mood - 20);
+                            report.push('<span class="text-purple-400">在黑暗中度過傍晚讓大家很不安 (心情 -20%)。</span>');
+                            gameState.flags.darkness_penalty_applied = true; // 只懲罰一次
+                        }
+                        
+                        // V7 Bug Fix: 確保 21:00 的提示在這裡
+                        report.push('<br>夜深了，9°C 的空氣刺骨。你準備睡覺了。');
+                        report.push('<span class="text-blue-400">(提示) 在這種低溫下睡覺，不使用熱源 (電暖器/熱水壺) 將會嚴重影響你的健康。</span>');
+                        break;
+                    
+                    case 4: // 推進到 睡覺 (深夜 03:00)
+                        // 睡前 21:00 的結算
+                        // [低溫懲罰]
+                        const usedHeater = document.querySelector('.select-btn[data-id="heater"]').disabled; // 簡易檢查 (不完美, 但可用)
+                        const usedKettle = document.querySelector('.select-btn[data-id="kettle"]').disabled;
+                        
+                        // V7 Bug Fix: 應該檢查是否 *剛剛* 使用了
+                        // 這裡簡化邏輯：如果健康度低於某個值, 視為受寒
+                        if (gameState.stats.health < 60 && !gameState.flags.low_temp_penalty_applied) {
+                             gameState.stats.health = Math.max(0, gameState.stats.health - 15);
+                             report.push('<span class="text-red-400">你沒有足夠的熱源，在 9°C 低溫下睡去，健康嚴重下降 (健康 -15%)。</span>');
+                             gameState.flags.low_temp_penalty_applied = true;
+                        }
+
+                        // [最終事件: 入侵者]
+                        checkFinalEvent(report.join("<br>"));
+                        return; // 結束遊戲，不渲染下一時相
+                }
+                
+                // --- 3. 檢查是否提前失敗 ---
+                if (gameState.stats.fullness <= 0) {
+                    showConclusion(false, "你因飽足度歸零而昏倒...<br>挑戰失敗。");
+                    return;
+                }
+                if (gameState.stats.health <= 0) {
+                    showConclusion(false, "你因健康歸零而倒下...<br>挑戰失敗。");
+                    return;
+                }
+
+                // --- 4. 渲染新時相 ---
+                renderPhase(report.join("<br>"));
+
+                // V6 Change: Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // V5: 最終事件
+            function checkFinalEvent(reportSummary) {
+                let finalReport = reportSummary;
+                finalReport += "<br><br><strong class='text-2xl text-red-500'>(深夜 03:00) 砰！巨響傳來，有入侵者！你必須立刻求救！</strong><br><br>";
+
+                const canCall = gameState.stats.phone > 0;
+                const canRadio = gameState.flags.radio_on;
+
+                if (canCall) {
+                    finalReport += "<span class='text-green-400'>你抓起手機成功撥號... 救援隊正在路上！</span>";
+                    showConclusion(true, finalReport);
+                } else if (canRadio) {
+                    finalReport += "<span class='text-green-400'>無線電傳來了回應... 救援隊聽到了你的求救！</span>";
+                    showConclusion(true, finalReport);
                 } else {
-                    ui.energyCount.classList.add('text-green-400');
-                    ui.energyCount.classList.remove('text-red-500');
-                }
-            }
-            
-            function renderEnergyBlocks() {
-                ui.energyDisplay.innerHTML = '';
-                for (let i = 0; i < 10; i++) {
-                    const block = document.createElement('div');
-                    block.id = `energy-block-${i}`;
-                    block.className = 'energy-block h-6 rounded';
-                    ui.energyDisplay.appendChild(block);
+                    finalReport += "<span class='text-red-400'>你的手機一片漆黑，無線電也靜悄悄。你錯失了唯一的求救機會...</span>";
+                    showConclusion(false, finalReport);
                 }
             }
 
-            function showMessage(message, type) {
-                ui.feedbackMessage.textContent = message;
-                ui.feedbackMessage.classList.remove('hidden', 'bg-red-600', 'bg-yellow-600', 'bg-green-600', 'bg-blue-600', 'opacity-0');
-                
-                let colorClass = 'bg-blue-600';
-                if (type === 'error') colorClass = 'bg-red-600';
-                else if (type === 'warning') colorClass = 'bg-yellow-600 text-gray-900';
-                else if (type === 'success') colorClass = 'bg-green-600';
-                
-                ui.feedbackMessage.classList.add(colorClass);
-                
-                setTimeout(() => {
-                    ui.feedbackMessage.classList.add('opacity-0');
-                    setTimeout(() => ui.feedbackMessage.classList.add('hidden'), 500);
-                }, 3000);
-            }
-
+            // V5: 顯示總結畫面
             function showConclusion(isSuccess, reason) {
                 screens.game.classList.add('hidden');
                 screens.conclusion.classList.remove('hidden');
@@ -672,7 +630,7 @@
                     ui.conclusion.title.textContent = "❮ 挑戰成功 ❯";
                     ui.conclusion.title.classList.remove('text-red-500');
                     ui.conclusion.title.classList.add('text-green-400');
-                    // V-Fix: Use innerHTML to render line breaks
+                    // V-Fix (Bug): Use innerHTML to render line breaks
                     ui.conclusion.feedback.innerHTML = reason; 
                     ui.conclusion.feedback.classList.remove('text-red-400');
                     ui.conclusion.feedback.classList.add('text-green-400');
@@ -680,7 +638,7 @@
                     ui.conclusion.title.textContent = "❮ 挑戰失敗 ❯";
                     ui.conclusion.title.classList.remove('text-green-400');
                     ui.conclusion.title.classList.add('text-red-500');
-                    // V-Fix: Use innerHTML to render line breaks
+                    // V-Fix (Bug): Use innerHTML to render line breaks
                     ui.conclusion.feedback.innerHTML = reason;
                     ui.conclusion.feedback.classList.remove('text-green-400');
                     ui.conclusion.feedback.classList.add('text-red-400');
@@ -688,37 +646,17 @@
 
                 ui.conclusion.stats.textContent = `你總共消耗了 ${10 - gameState.energy} 格電，剩餘 ${gameState.energy} 格。`;
                 
-                ui.conclusion.details.innerHTML = `
-                    <h4 class="text-lg font-bold text-white border-b border-gray-700 pb-2">最終狀態</h4>
-                    <p><span class="text-red-400 font-bold">飽足度:</span> ${gameState.stats.hunger}%</p>
-                    <p><span class="text-blue-400 font-bold">健康:</span> ${gameState.stats.health}%</p>
-                    <p><span class="text-yellow-400 font-bold">心情:</span> ${gameState.stats.mood}%</p>
-                    <p><span class="text-green-400 font-bold">手機:</span> ${gameState.stats.phone}%</p>
-                    <p><span class="text-green-400 font-bold">無線電:</span> ${gameState.stats.radioOn ? "開啟" : "關閉"}</p>
-                `;
+                // 顯示最終數值
+                ui.conclusion.finalFullness.textContent = gameState.stats.fullness;
+                ui.conclusion.finalHealth.textContent = gameState.stats.health;
+                ui.conclusion.finalMood.textContent = gameState.stats.mood;
+                ui.conclusion.finalPhone.textContent = gameState.stats.phone;
+                ui.conclusion.finalRadio.textContent = gameState.flags.radio_on ? "已開啟" : "未開啟";
+
+                // V6 Change: Scroll to top
+                window.scrollTo({ top: 0, behavior: 'auto' });
             }
 
-            // --- Helper 函式 ---
-            function keyToText(key) {
-                switch(key) {
-                    case 'hunger': return '飽足度'; // V5 Change
-                    case 'health': return '健康';
-                    case 'mood': return '心情';
-                    case 'phone': return '手機';
-                    case 'radioOn': return '無線電';
-                    default: return key;
-                }
-            }
-            function keyToUnit(key) {
-                switch(key) {
-                    case 'phone': return '%';
-                    case 'radioOn': return '';
-                    default: return '%';
-                }
-            }
-            
-            // --- 啟動遊戲 ---
-            init();
         });
     </script>
 </body>
