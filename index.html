@@ -39,11 +39,10 @@
         .survival-bar-fill.green { background-color: #22C55E; }
         .survival-bar-fill.blue { background-color: #3B82F6; }
         .survival-bar-fill.purple { background-color: #8B5CF6; }
-        .survival-bar-fill.cyan { background-color: #06B6D4; }
-
+        
         /* 確保浮動標頭和按鈕下的內容不會被遮擋 */
         #game-screen {
-            padding-top: 170px;
+            padding-top: 220px; /* 增加頂部留白以容納新的資源列 */
             padding-bottom: 120px; 
         }
 
@@ -93,8 +92,8 @@
             
             <!-- 浮動狀態列 (頂部) -->
             <div id="sticky-header" class="fixed top-0 left-0 right-0 bg-gray-900 shadow-lg z-20 max-w-xl mx-auto p-4 border-b border-gray-700">
-                <!-- 生存數值顯示 (不包含手機) -->
-                <div id="survival-stats" class="grid grid-cols-3 gap-3 mb-4 text-sm">
+                <!-- 1. 生存數值顯示 (生命指標) -->
+                <div id="survival-stats" class="grid grid-cols-3 gap-3 mb-3 text-sm">
                     <div class="flex items-center space-x-1">
                         <span class="text-red-400 font-bold w-12">飽足:</span>
                         <div class="flex-grow survival-bar-bg rounded-full h-3">
@@ -118,14 +117,31 @@
                     </div>
                 </div>
 
-                <!-- 電力存量 -->
-                <div class="bg-gray-800 p-3 rounded-lg shadow-md">
-                    <h2 class="text-base font-bold mb-2 text-center">蓄電池存量</h2>
-                    <div id="energy-display" class="grid grid-cols-10 gap-1.5 mb-2">
-                        <!-- JS 會在這裡生成 10 格電 -->
+                <!-- 2. 資源顯示列 (蓄電池 + 手機) -->
+                <div class="flex gap-3">
+                    <!-- 蓄電池存量 -->
+                    <div class="bg-gray-800 p-2 rounded-lg shadow-md flex-grow">
+                        <h2 class="text-sm font-bold mb-1 text-center text-gray-400">蓄電池</h2>
+                        <div id="energy-display" class="grid grid-cols-10 gap-1 mb-1 h-6">
+                            <!-- JS 會在這裡生成 10 格電 -->
+                        </div>
+                        <div class="text-center text-lg font-bold leading-none">
+                            <span id="energy-count" class="text-green-400">10</span> <span class="text-xs text-gray-500">/10</span>
+                        </div>
                     </div>
-                    <div class="text-center text-lg font-bold">
-                        剩餘： <span id="energy-count" class="text-green-400 text-2xl">10</span> / 10 格
+
+                    <!-- 手機電量 (獨立圖示) -->
+                    <div class="bg-gray-800 p-2 rounded-lg shadow-md w-20 flex flex-col items-center justify-center relative">
+                        <!-- 手機外框 -->
+                        <div class="relative w-8 h-12 border-2 border-gray-500 bg-gray-900 rounded-md overflow-hidden">
+                            <!-- 瀏海 -->
+                            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-3 h-1 bg-gray-500 rounded-b-sm z-10"></div>
+                            <!-- 電量液面 -->
+                            <div id="phone-battery-bar" class="absolute bottom-0 left-0 w-full bg-green-500 transition-all duration-500" style="height: 0%"></div>
+                        </div>
+                        <div class="text-xs font-bold text-green-400 mt-1">
+                            <span id="val-phone">0%</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -139,8 +155,8 @@
 
                 <!-- 情境報告 (含圖片) -->
                 <div class="bg-gray-800 rounded-lg shadow-lg mb-8 overflow-hidden border border-gray-700">
-                    <!-- JS 會切換這張圖片的 src，預設隱藏直到載入完成 -->
-                    <img id="scenario-image" src="" class="story-image hidden" alt="情境圖片">
+                    <!-- JS 會切換這張圖片的 src -->
+                    <img id="scenario-image" src="" onerror="this.style.display='none'" class="story-image hidden" alt="情境圖片">
                     <div id="scenario-report" class="p-5 text-base leading-relaxed">
                         <!-- JS 會在這裡插入情境報告 -->
                     </div>
@@ -265,7 +281,7 @@
                 }
             };
 
-            // 設定本地圖片路徑 (含備用 Unsplash 連結)
+            // 設定本地圖片路徑 (GitHub Pages 部署版)
             const phaseDetails = [
                 { 
                     time: "早上 (07:00)", 
@@ -320,12 +336,14 @@
                 bars: {
                     fullness: document.getElementById('bar-fullness'),
                     health: document.getElementById('bar-health'),
-                    mood: document.getElementById('bar-mood')
+                    mood: document.getElementById('bar-mood'),
+                    phone: document.getElementById('phone-battery-bar') // V9: Updated selector
                 },
                 vals: {
                     fullness: document.getElementById('val-fullness'),
                     health: document.getElementById('val-health'),
-                    mood: document.getElementById('val-mood')
+                    mood: document.getElementById('val-mood'),
+                    phone: document.getElementById('val-phone')
                 },
                 conclusion: {
                     title: document.getElementById('conclusion-title'),
@@ -343,21 +361,14 @@
 
             function startGame() {
                 screens.intro.classList.add('hidden');
-                screens.conclusion.classList.add('hidden'); // 修復：重新挑戰時隱藏結算畫面
+                screens.conclusion.classList.add('hidden');
                 screens.game.classList.remove('hidden');
                 
                 gameState = JSON.parse(JSON.stringify(defaultGameState));
                 
                 renderEnergyBlocks();
                 renderAllApplianceCards();
-                
-                // 產生開場劇情
-                const openingStory = `
-                    <p class="mb-2">早安。窗外是一片白茫茫的寒霜，室內溫度只有 9°C，呼出的氣都變成了白煙。</p>
-                    <p class="mb-2">雖然蓄電池是滿的，但大家的肚子都餓得咕咕叫了。</p>
-                    <p class="font-bold text-yellow-400">這是一天的開始，你的第一個決定將影響全家人的士氣。</p>
-                `;
-                renderPhase(openingStory); 
+                renderPhase(""); // 初始情境報告為空
 
                 window.scrollTo({ top: 0, behavior: 'auto' });
             }
@@ -374,13 +385,12 @@
                 ui.phaseTitle.textContent = phase.time;
                 buttons.proceed.textContent = phase.proceedText;
                 
-                // 處理圖片載入 (本地優先，失敗則載入備用)
-                ui.scenarioImage.classList.add('hidden'); // 先隱藏以避免閃爍
+                ui.scenarioImage.classList.add('hidden');
                 ui.scenarioImage.onload = function() {
                     this.classList.remove('hidden');
                 };
                 ui.scenarioImage.onerror = function() {
-                    this.onerror = null; // 防止無限迴圈
+                    this.onerror = null;
                     this.src = phase.backupImg;
                     this.classList.remove('hidden');
                 };
@@ -398,7 +408,7 @@
                 for(let i = 0; i < 10; i++) {
                     const block = document.createElement('div');
                     block.id = `energy-block-${i}`;
-                    block.className = 'energy-block h-4 md:h-6 rounded';
+                    block.className = 'energy-block h-full rounded'; // h-full to fill container
                     ui.energyDisplay.appendChild(block);
                 }
             }
@@ -457,10 +467,12 @@
                 ui.vals.fullness.textContent = `${stats.fullness}%`;
                 ui.vals.health.textContent = `${stats.health}%`;
                 ui.vals.mood.textContent = `${stats.mood}%`;
+                ui.vals.phone.textContent = `${stats.phone}%`;
 
                 ui.bars.fullness.style.width = `${stats.fullness}%`;
                 ui.bars.health.style.width = `${stats.health}%`;
                 ui.bars.mood.style.width = `${stats.mood}%`;
+                ui.bars.phone.style.height = `${stats.phone}%`; // Vertical bar for phone
                 
                 ui.bars.fullness.className = `survival-bar-fill rounded-full ${stats.fullness < 50 ? 'red' : 'green'}`;
                 ui.bars.health.className = `survival-bar-fill rounded-full ${stats.health < 50 ? 'red' : 'blue'}`;
@@ -657,15 +669,12 @@
                 let finalReport = "";
                 finalReport += `<p class="mb-4 border-b border-gray-600 pb-4">${sleepReport}</p>`;
                 
-                // 入侵者圖片：指向 images/intruder_alert.jpg
                 ui.scenarioImage.src = "images/intruder_alert.jpg";
-                // 確保最後一張圖也能正常顯示
                 ui.scenarioImage.onerror = function() {
                     this.onerror = null;
                     this.src = "https://images.unsplash.com/photo-1626672758949-540334017f95?auto=format&fit=crop&w=800&q=80";
                     this.classList.remove('hidden');
                 };
-                // 最後也要顯示出來
                 ui.scenarioImage.classList.remove('hidden');
 
                 finalReport += "<strong class='text-2xl text-red-500 block mb-4'>(深夜 03:00) 砰！巨響傳來，有入侵者！你必須立刻求救！</strong>";
