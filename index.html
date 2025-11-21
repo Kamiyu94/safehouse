@@ -67,7 +67,7 @@
                 <p class="text-xl md:text-2xl text-gray-300">蓄電池不是無限的！</p>
             </header>
             <div class="bg-gray-800 p-6 rounded-lg shadow-2xl w-full">
-                <!-- 開場圖片 -->
+                <!-- 開場圖片：使用相對路徑，並加入 onerror 備援機制 -->
                 <img src="images/morning_cold.jpg" onerror="this.src='https://images.unsplash.com/photo-1477601263545-51d103b72cb8?auto=format&fit=crop&w=800&q=80'" class="w-full h-48 object-cover rounded-md mb-6 opacity-80" alt="寒冷的窗戶">
                 <p class="text-lg font-bold mb-4">(嚴肅地) 試煉開始！</p>
                 <p class="text-base text-gray-300 mb-4 text-left">
@@ -135,7 +135,7 @@
 
                 <!-- 情境報告 (含圖片) -->
                 <div class="bg-gray-800 rounded-lg shadow-lg mb-8 overflow-hidden border border-gray-700">
-                    <!-- 圖片使用 onerror 提供備用連結，以防圖片未上傳時仍可顯示示意圖 -->
+                    <!-- 圖片容器 -->
                     <img id="scenario-image" src="" onerror="this.style.display='none'" class="story-image hidden" alt="情境圖片">
                     <div id="scenario-report" class="p-5 text-base leading-relaxed">
                         <!-- JS 會在這裡插入情境報告 -->
@@ -226,7 +226,6 @@
                     { id: 'media_player', name: '多媒體播放器 (娛樂 2 小時)', cost: 2, type: 'consumable', desc: '適度娛樂可以避免心理崩潰。', effects: { mood: +30 } }
                 ],
                 low: [
-                    // V8 Update: 手機充電現在會增加心情
                     { 
                         id: 'phone', 
                         name: '手機 (充電一次)', 
@@ -261,7 +260,7 @@
                 }
             };
 
-            // 使用您 github repo 中的圖片路徑
+            // 圖片設定 (優先使用本地 images/ 資料夾，onerror 時切換到備用連結)
             const phaseDetails = [
                 { 
                     time: "早上 (07:00)", 
@@ -369,9 +368,13 @@
                 ui.phaseTitle.textContent = phase.time;
                 buttons.proceed.textContent = phase.proceedText;
                 
-                // 設置圖片 (優先使用本地，失敗使用備用)
+                // 設置圖片：先綁定錯誤處理，再設定 src，確保能捕捉錯誤
+                ui.scenarioImage.onerror = function() { 
+                    this.src = phase.backupImg; 
+                    // 如果備用圖也失敗，隱藏圖片
+                    this.onerror = function() { this.style.display = 'none'; };
+                };
                 ui.scenarioImage.src = phase.img;
-                ui.scenarioImage.onerror = function() { this.src = phase.backupImg; };
                 ui.scenarioImage.classList.remove('hidden');
                 
                 ui.scenarioReport.innerHTML = reportText;
@@ -647,7 +650,10 @@
                 
                 // 入侵者圖片
                 ui.scenarioImage.src = "images/intruder_alert.jpg";
-                ui.scenarioImage.onerror = function() { this.src = "https://images.unsplash.com/photo-1626672758949-540334017f95?auto=format&fit=crop&w=800&q=80"; };
+                ui.scenarioImage.onerror = function() { 
+                    this.src = "https://images.unsplash.com/photo-1626672758949-540334017f95?auto=format&fit=crop&w=800&q=80"; 
+                    this.onerror = function() { this.style.display = 'none'; };
+                };
                 ui.scenarioImage.classList.remove('hidden');
 
                 finalReport += "<strong class='text-2xl text-red-500 block mb-4'>(深夜 03:00) 砰！巨響傳來，有入侵者！你必須立刻求救！</strong>";
