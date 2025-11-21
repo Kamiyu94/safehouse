@@ -11,9 +11,9 @@
             font-family: 'Inter', 'Noto Sans TC', sans-serif;
             background-color: #111827; /* gray-900 */
         }
-        .card-category-high { border-left: 6px solid #EF4444; /* 加粗邊框 */ }
-        .card-category-medium { border-left: 6px solid #F59E0B; }
-        .card-category-low { border-left: 6px solid #22C55E; }
+        .card-category-high { border-left: 6px solid #EF4444; /* red-500 */ }
+        .card-category-medium { border-left: 6px solid #F59E0B; /* amber-500 */ }
+        .card-category-low { border-left: 6px solid #22C55E; /* green-500 */ }
 
         .energy-block {
             transition: all 0.3s ease;
@@ -41,7 +41,7 @@
         .survival-bar-fill.purple { background-color: #8B5CF6; }
         .survival-bar-fill.cyan { background-color: #06B6D4; }
 
-        /* 確保浮動標頭和按鈕下的內容不會被遮擋 - 增加 padding 以容納更大的標頭 */
+        /* 確保浮動標頭和按鈕下的內容不會被遮擋 */
         #game-screen {
             padding-top: 240px; 
             padding-bottom: 140px; 
@@ -50,7 +50,7 @@
         /* 圖片容器樣式 */
         .story-image {
             width: 100%;
-            height: 240px; /* 稍微加大圖片高度 */
+            height: 240px;
             object-fit: cover;
             border-radius: 0.5rem 0.5rem 0 0;
             transition: opacity 0.3s ease-in-out;
@@ -68,7 +68,7 @@
                 <p class="text-2xl text-gray-300">蓄電池不是無限的！</p>
             </header>
             <div class="bg-gray-800 p-6 rounded-lg shadow-2xl w-full">
-                <!-- 開場圖片：增加 onerror 處理 -->
+                <!-- 開場圖片：修正 onerror 邏輯 -->
                 <img src="images/morning_cold.jpg" 
                      onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1477601263545-51d103b72cb8?auto=format&fit=crop&w=800&q=80';" 
                      class="w-full h-56 object-cover rounded-md mb-6 opacity-90" 
@@ -91,9 +91,9 @@
         <!-- 畫面 2: 遊戲主體 -->
         <div id="game-screen" class="hidden">
             
-            <!-- 浮動狀態列 (頂部) - 字體放大 -->
+            <!-- 浮動狀態列 (頂部) -->
             <div id="sticky-header" class="fixed top-0 left-0 right-0 bg-gray-900 shadow-2xl z-20 max-w-xl mx-auto p-4 border-b-2 border-gray-700">
-                <!-- 1. 生存數值顯示 (生命指標) - 字體放大 -->
+                <!-- 生存數值顯示 -->
                 <div id="survival-stats" class="grid grid-cols-3 gap-2 mb-3 text-base font-bold">
                     <div class="flex items-center space-x-1">
                         <span class="text-red-400 w-12">飽足:</span>
@@ -118,7 +118,7 @@
                     </div>
                 </div>
 
-                <!-- 2. 資源顯示列 (蓄電池 + 手機) -->
+                <!-- 資源顯示列 -->
                 <div class="flex gap-4">
                     <!-- 蓄電池存量 -->
                     <div class="bg-gray-800 p-3 rounded-lg shadow-md flex-grow">
@@ -133,11 +133,8 @@
 
                     <!-- 手機電量 (獨立圖示) -->
                     <div class="bg-gray-800 p-2 rounded-lg shadow-md w-24 flex flex-col items-center justify-center relative">
-                        <!-- 手機外框 -->
                         <div class="relative w-10 h-14 border-4 border-gray-500 bg-gray-900 rounded-lg overflow-hidden">
-                            <!-- 瀏海 -->
                             <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-4 h-1.5 bg-gray-500 rounded-b-sm z-10"></div>
-                            <!-- 電量液面 -->
                             <div id="phone-battery-bar" class="absolute bottom-0 left-0 w-full bg-green-500 transition-all duration-500" style="height: 0%"></div>
                         </div>
                         <div class="text-sm font-bold text-green-400 mt-1">
@@ -147,16 +144,15 @@
                 </div>
             </div>
 
-            <!-- 遊戲主要內容 (可捲動) -->
+            <!-- 遊戲主要內容 -->
             <main class="w-full">
-                <!-- 時段標題 -->
                 <header class="text-center mb-6">
                     <h1 id="phase-title" class="text-4xl font-bold text-yellow-400 drop-shadow-md"></h1>
                 </header>
 
-                <!-- 情境報告 (含圖片) - 字體放大 -->
+                <!-- 情境報告 (含圖片) - 修正: 移除 inline onerror 以修復預覽問題 -->
                 <div class="bg-gray-800 rounded-xl shadow-2xl mb-10 overflow-hidden border border-gray-600">
-                    <img id="scenario-image" src="" onerror="this.style.display='none'" class="story-image hidden" alt="情境圖片">
+                    <img id="scenario-image" src="" class="story-image hidden" alt="情境圖片">
                     <div id="scenario-report" class="p-6 text-lg leading-loose text-gray-200">
                         <!-- JS 會在這裡插入情境報告 -->
                     </div>
@@ -171,9 +167,7 @@
                         <h3 class="text-2xl font-bold text-red-500 mb-4 flex items-center">
                             <span class="text-3xl mr-3">👹</span> 毀滅級 (高耗能)
                         </h3>
-                        <div id="high-energy-list" class="grid grid-cols-1 gap-6">
-                            <!-- JS 會在這裡生成卡片 -->
-                        </div>
+                        <div id="high-energy-list" class="grid grid-cols-1 gap-6"></div>
                     </section>
                     
                     <!-- 中耗能 -->
@@ -181,9 +175,7 @@
                         <h3 class="text-2xl font-bold text-amber-500 mb-4 flex items-center">
                             <span class="text-3xl mr-3">🟡</span> 戰術級 (中耗能)
                         </h3>
-                        <div id="medium-energy-list" class="grid grid-cols-1 gap-6">
-                            <!-- JS 會在這裡生成卡片 -->
-                        </div>
+                        <div id="medium-energy-list" class="grid grid-cols-1 gap-6"></div>
                     </section>
 
                     <!-- 低耗能 -->
@@ -191,14 +183,12 @@
                         <h3 class="text-2xl font-bold text-green-500 mb-4 flex items-center">
                             <span class="text-3xl mr-3">💚</span> 維生級 (低耗能)
                         </h3>
-                        <div id="low-energy-list" class="grid grid-cols-1 gap-6">
-                            <!-- JS 會在這裡生成卡片 -->
-                        </div>
+                        <div id="low-energy-list" class="grid grid-cols-1 gap-6"></div>
                     </section>
                 </div>
             </main>
 
-            <!-- 浮動推進按鈕 (底部) - 字體放大 -->
+            <!-- 浮動推進按鈕 -->
             <button id="proceed-button" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-5 px-6 rounded-t-xl text-2xl shadow-[0_-5px_15px_rgba(0,0,0,0.3)] transition duration-300 mt-8 fixed bottom-0 left-0 right-0 z-20 max-w-xl mx-auto opacity-95 border-t-2 border-blue-400">
                 推進到 中午 (12:00)
             </button>
@@ -207,9 +197,7 @@
         <!-- 畫面 3: 總結報告 -->
         <div id="conclusion-screen" class="hidden flex flex-col items-center justify-center min-h-[90vh] text-center pt-20 pb-20">
 
-            <div id="conclusion-feedback" class="text-xl mb-8 p-8 bg-gray-800 rounded-xl text-left w-full border-l-8 border-yellow-400 shadow-2xl leading-relaxed">
-                <!-- JS 會插入動態反饋 -->
-            </div>
+            <div id="conclusion-feedback" class="text-xl mb-8 p-8 bg-gray-800 rounded-xl text-left w-full border-l-8 border-yellow-400 shadow-2xl leading-relaxed"></div>
 
             <header class="mb-8">
                 <h1 id="conclusion-title" class="text-4xl md:text-5xl font-bold text-yellow-400 mb-4">❮ 試煉總結 ❯</h1>
@@ -385,15 +373,22 @@
                 ui.phaseTitle.textContent = phase.time;
                 buttons.proceed.textContent = phase.proceedText;
                 
+                // 重置圖片狀態
                 ui.scenarioImage.classList.add('hidden');
+                
+                // 設定載入成功的回調
                 ui.scenarioImage.onload = function() {
                     this.classList.remove('hidden');
                 };
+                
+                // 設定載入失敗的回調 (自動切換備用圖)
                 ui.scenarioImage.onerror = function() {
-                    this.onerror = null;
+                    this.onerror = null; // 防止無限迴圈
                     this.src = phase.backupImg;
                     this.classList.remove('hidden');
                 };
+                
+                // 開始載入圖片
                 ui.scenarioImage.src = phase.img;
                 
                 ui.scenarioReport.innerHTML = reportText;
@@ -437,23 +432,18 @@
                         case 'mood': displayKey = '心情'; colorClass = 'text-purple-400'; break;
                         case 'phone': displayKey = '手機電量'; colorClass = 'text-cyan-400'; break;
                     }
-                    // 字體放大：text-xl
                     effectsText += `<span class="${colorClass} font-bold text-xl mr-3 whitespace-nowrap">${displayKey}${sign}${value}%</span> `;
                 }
 
                 card.innerHTML = `
                     <div class="flex-grow mb-5">
                         <div class="flex justify-between items-start mb-3">
-                            <!-- 標題放大 -->
                             <h4 class="text-xl md:text-2xl font-bold text-white">${app.name}</h4>
-                            <!-- 消耗電力放大 -->
                             <span class="text-base text-gray-300 whitespace-nowrap ml-2 bg-gray-900 px-2 py-1 rounded">消耗 <span class="font-bold text-xl text-yellow-400">${app.cost}</span> 格</span>
                         </div>
-                        <!-- 說明文字放大且顏色調亮 -->
                         <p class="text-lg text-gray-300 mb-3 leading-snug">${app.desc}</p>
                         <div class="mt-3 flex flex-wrap">${effectsText}</div>
                     </div>
-                    <!-- 按鈕放大 -->
                     <button data-id="${app.id}" data-cost="${app.cost}" data-type="${app.type}" class="select-btn w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 px-6 rounded-lg transition duration-300 text-xl shadow-md border-b-4 border-green-700 active:border-0 active:translate-y-1">
                         使用
                     </button>
@@ -520,7 +510,6 @@
                     btn.disabled = isDisabled;
                     btn.textContent = text;
                     
-                    // 保持按鈕樣式
                     btn.className = "select-btn w-full font-bold py-4 px-6 rounded-lg transition duration-300 text-xl shadow-md border-b-4 active:border-0 active:translate-y-1";
                     
                     if (isDisabled) {
@@ -564,12 +553,11 @@
                 updateAllCardButtons();
             }
 
-            // 產生情境描述 (字體放大)
+            // 產生情境描述
             function generateStory(phase, passiveEffects) {
                 let story = "";
                 
                 if (passiveEffects.length > 0) {
-                    // 被動效果字體放大
                     story += `<div class="mb-6 p-4 bg-gray-900 rounded border-l-8 border-red-500 text-base text-gray-200 shadow-inner">${passiveEffects.join("<br>")}</div>`;
                 }
 
@@ -675,8 +663,8 @@
                 let finalReport = "";
                 finalReport += `<p class="mb-6 border-b-2 border-gray-600 pb-6 text-xl">${sleepReport}</p>`;
                 
-                // 入侵者圖片
                 ui.scenarioImage.src = "images/intruder_alert.jpg";
+                // 修正 onerror
                 ui.scenarioImage.onerror = function() {
                     this.onerror = null;
                     this.src = "https://images.unsplash.com/photo-1626672758949-540334017f95?auto=format&fit=crop&w=800&q=80";
