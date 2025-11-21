@@ -53,6 +53,7 @@
             height: 200px;
             object-fit: cover;
             border-radius: 0.5rem 0.5rem 0 0;
+            transition: opacity 0.3s ease-in-out;
         }
     </style>
 </head>
@@ -67,8 +68,11 @@
                 <p class="text-xl md:text-2xl text-gray-300">蓄電池不是無限的！</p>
             </header>
             <div class="bg-gray-800 p-6 rounded-lg shadow-2xl w-full">
-                <!-- 開場圖片：使用相對路徑，並加入 onerror 備援機制 -->
-                <img src="images/morning_cold.jpg" onerror="this.src='https://images.unsplash.com/photo-1477601263545-51d103b72cb8?auto=format&fit=crop&w=800&q=80'" class="w-full h-48 object-cover rounded-md mb-6 opacity-80" alt="寒冷的窗戶">
+                <!-- 開場圖片：增加 onerror 處理，確保預覽時能看到備用圖 -->
+                <img src="images/morning_cold.jpg" 
+                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1477601263545-51d103b72cb8?auto=format&fit=crop&w=800&q=80';" 
+                     class="w-full h-48 object-cover rounded-md mb-6 opacity-90" 
+                     alt="寒冷的窗戶">
                 <p class="text-lg font-bold mb-4">(嚴肅地) 試煉開始！</p>
                 <p class="text-base text-gray-300 mb-4 text-left">
                     開戰第七天，寒流來襲，室外 9°C。糧食和水還夠，但已斷電。
@@ -89,7 +93,7 @@
             
             <!-- 浮動狀態列 (頂部) -->
             <div id="sticky-header" class="fixed top-0 left-0 right-0 bg-gray-900 shadow-lg z-20 max-w-xl mx-auto p-4 border-b border-gray-700">
-                <!-- 生存數值顯示 -->
+                <!-- 生存數值顯示 (不包含手機) -->
                 <div id="survival-stats" class="grid grid-cols-3 gap-3 mb-4 text-sm">
                     <div class="flex items-center space-x-1">
                         <span class="text-red-400 font-bold w-12">飽足:</span>
@@ -135,8 +139,8 @@
 
                 <!-- 情境報告 (含圖片) -->
                 <div class="bg-gray-800 rounded-lg shadow-lg mb-8 overflow-hidden border border-gray-700">
-                    <!-- 圖片容器 -->
-                    <img id="scenario-image" src="" onerror="this.style.display='none'" class="story-image hidden" alt="情境圖片">
+                    <!-- JS 會切換這張圖片的 src，預設隱藏直到載入完成 -->
+                    <img id="scenario-image" src="" class="story-image hidden" alt="情境圖片">
                     <div id="scenario-report" class="p-5 text-base leading-relaxed">
                         <!-- JS 會在這裡插入情境報告 -->
                     </div>
@@ -254,13 +258,14 @@
                 flags: {
                     led_light_on: false,
                     radio_on: false,
+                    darkness_penalty_applied: false,
                     low_temp_penalty_applied: false,
                     heater_used_tonight: false, 
                     kettle_used_tonight: false
                 }
             };
 
-            // 圖片設定 (優先使用本地 images/ 資料夾，onerror 時切換到備用連結)
+            // 設定本地圖片路徑 (含備用 Unsplash 連結)
             const phaseDetails = [
                 { 
                     time: "早上 (07:00)", 
@@ -338,6 +343,7 @@
 
             function startGame() {
                 screens.intro.classList.add('hidden');
+                screens.conclusion.classList.add('hidden'); // 修復：重新挑戰時隱藏結算畫面
                 screens.game.classList.remove('hidden');
                 
                 gameState = JSON.parse(JSON.stringify(defaultGameState));
@@ -368,14 +374,17 @@
                 ui.phaseTitle.textContent = phase.time;
                 buttons.proceed.textContent = phase.proceedText;
                 
-                // 設置圖片：先綁定錯誤處理，再設定 src，確保能捕捉錯誤
-                ui.scenarioImage.onerror = function() { 
-                    this.src = phase.backupImg; 
-                    // 如果備用圖也失敗，隱藏圖片
-                    this.onerror = function() { this.style.display = 'none'; };
+                // 處理圖片載入 (本地優先，失敗則載入備用)
+                ui.scenarioImage.classList.add('hidden'); // 先隱藏以避免閃爍
+                ui.scenarioImage.onload = function() {
+                    this.classList.remove('hidden');
+                };
+                ui.scenarioImage.onerror = function() {
+                    this.onerror = null; // 防止無限迴圈
+                    this.src = phase.backupImg;
+                    this.classList.remove('hidden');
                 };
                 ui.scenarioImage.src = phase.img;
-                ui.scenarioImage.classList.remove('hidden');
                 
                 ui.scenarioReport.innerHTML = reportText;
                 
@@ -648,12 +657,15 @@
                 let finalReport = "";
                 finalReport += `<p class="mb-4 border-b border-gray-600 pb-4">${sleepReport}</p>`;
                 
-                // 入侵者圖片
+                // 入侵者圖片：指向 images/intruder_alert.jpg
                 ui.scenarioImage.src = "images/intruder_alert.jpg";
-                ui.scenarioImage.onerror = function() { 
-                    this.src = "https://images.unsplash.com/photo-1626672758949-540334017f95?auto=format&fit=crop&w=800&q=80"; 
-                    this.onerror = function() { this.style.display = 'none'; };
+                // 確保最後一張圖也能正常顯示
+                ui.scenarioImage.onerror = function() {
+                    this.onerror = null;
+                    this.src = "https://images.unsplash.com/photo-1626672758949-540334017f95?auto=format&fit=crop&w=800&q=80";
+                    this.classList.remove('hidden');
                 };
+                // 最後也要顯示出來
                 ui.scenarioImage.classList.remove('hidden');
 
                 finalReport += "<strong class='text-2xl text-red-500 block mb-4'>(深夜 03:00) 砰！巨響傳來，有入侵者！你必須立刻求救！</strong>";
